@@ -1,0 +1,87 @@
+-------------- 2D ---------------
+--- 1 ---
+Building Element matrix of size 4
+(slice(1, -1, None), slice(1, -1, None))
+building took: 1.760884 ms
+Forcing boundary conditions
+Forcing boundaries took: 14.208018 ms
+--- 2 ---
+Direct solver took 0.172666 ms
+h**2: 0.06250	 error: 0.0000437
+--- 3 ---
+{'decomposition': 2.225115, 'forward': 0.107112, 'backward': 0.049001}
+--- 4 ---
+Fill-in: 0.92
+--- 5 ---
+{'decomposition': 0.283315, 'forward': 0.097957, 'backward': 0.047468}
+Fill-in: 0.90
+
+
+
+--- 1 ---
+Building Element matrix of size 16
+(slice(1, -1, None), slice(1, -1, None))
+building took: 1.558653 ms
+Forcing boundary conditions
+Forcing boundaries took: 64.136670 ms
+--- 2 ---
+Direct solver took 0.540955 ms
+h**2: 0.00391	 error: 0.0000034
+--- 3 ---
+{'decomposition': 0.358131, 'forward': 0.420766, 'backward': 0.36599}
+--- 4 ---
+Fill-in: 3.06
+--- 5 ---
+{'decomposition': 0.266938, 'forward': 0.393516, 'backward': 0.34306}
+Fill-in: 2.33
+
+
+
+--- 1 ---
+Building Element matrix of size 64
+(slice(1, -1, None), slice(1, -1, None))
+building took: 3.441323 ms
+Forcing boundary conditions
+Forcing boundaries took: 271.626233 ms
+--- 2 ---
+Direct solver took 9.504910 ms
+h**2: 0.00024	 error: 0.0000002
+--- 3 ---
+{'decomposition': 10.520173, 'forward': 12.924711, 'backward': 11.777175}
+--- 4 ---
+Fill-in: 12.61
+--- 5 ---
+{'decomposition': 6.18594, 'forward': 9.095967, 'backward': 8.757859}
+Fill-in: 8.71
+
+
+
+--- 1 ---
+Building Element matrix of size 256
+(slice(1, -1, None), slice(1, -1, None))
+building took: 24.819350 ms
+Forcing boundary conditions
+Forcing boundaries took: 3474.387605 ms
+--- 2 ---
+Direct solver took 717.794478 ms
+h**2: 0.00002	 error: 0.0000000
+--- 3 ---
+{'decomposition': 1688.557846, 'forward': 651.577353, 'backward': 613.839678}
+--- 4 ---
+Fill-in: 51.00
+--- 5 ---
+{'decomposition': 846.523934, 'forward': 407.760884, 'backward': 421.457083}
+Fill-in: 34.30
+
+
+
+--- 1 ---
+Building Element matrix of size 1024
+(slice(1, -1, None), slice(1, -1, None))
+building took: 395.765906 ms
+Forcing boundary conditions
+Forcing boundaries took: 174932.908359 ms
+--- 2 ---
+Direct solver took 42729.030197 ms
+h**2: 0.00000	 error: 0.0000000
+--- 3 ---

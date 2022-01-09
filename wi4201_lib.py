@@ -1,606 +1,297 @@
-# %%
+from __future__ import annotations
+from typing import List
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy import sparse as ssp
-import scipy.linalg as salg
-from scipy.sparse.linalg import spsolve, splu, inv
-from collections.abc import Callable
+from scipy.sparse.linalg import spsolve
 from sksparse.cholmod import cholesky
-
-# %%
-#Defining the constants
-P = 2		#Power of two
-N = 2**P	#Number of subdivisions
-U0 = 0.01 	#The border constant we might need to use?
-h = 1/N		#Discretisation step
-
-DEBUG = True
-
-# %%
-
-def get_elem_mat(N: int, dimension: str) -> ssp.csr_matrix:
-	"""Creates the element matrix 'Ah' for the 2D or 3D discrete laplaciaan
-
-	Parameters
-	----------
-	N : int
-	    Number of points in a direction of the grid
-	dimension : str
-	    2D/3D for two/three-dimensional discrete laplacian
-
-	Returns
-	-------
-	ssp.csc_matrix
-	    The element matrix Ah
-	"""
-	one_dim_diff = 2*np.eye((N))-np.eye((N), k=-1)-np.eye((N), k=1)
+from time import time_ns
 
 
-	ONE_DIM_DIFF	= ssp.csr_matrix(one_dim_diff.astype(int))
-	ID 		= ssp.csr_matrix(np.eye(N).astype(int))
+def get_elem_mat(N: int, spacing: float, dimension: str) -> ssp.csr_matrix:
+    """Creates the element matrix 'Ah' for the 2D or 3D discrete laplaciaan
 
-	x_dim_diff = (1/(h**2) * ssp.kron(ONE_DIM_DIFF,ID))
-	y_dim_diff = (1/(h**2) * ssp.kron(ID, ONE_DIM_DIFF))
+    Parameters
+    ----------
+    N : int
+        Number of points in a direction of the grid
+    dimension : str
+        2D/3D for two/three-dimensional discrete laplacian
 
-	X_DIM_DIFF 	= ssp.csr_matrix(x_dim_diff.astype(int))
-	Y_DIM_DIFF 	= ssp.csr_matrix(y_dim_diff.astype(int))
-	TWO_LAPLACE 	= ssp.csr_matrix(x_dim_diff + y_dim_diff)
+    Returns
+    -------
+    ssp.csc_matrix
+        The element matrix Ah
+    """
 
-	one_dim_diff = None
-	x_dim_diff = None
-	y_dim_diff = None
+    one_dim_diff = 2*np.eye((N))-np.eye((N), k=-1)-np.eye((N), k=1)
+    h = spacing
 
-	if dimension == "2D":
-		return TWO_LAPLACE
+    ONE_DIM_DIFF = ssp.csr_matrix(one_dim_diff.astype(int))
+    ID = ssp.csr_matrix(np.eye(N).astype(int))
 
-	elif dimension == "3D":
-		z_dim_diff = (1/(h**2)*(
-			ssp.kron(ID,
-				ssp.kron(ID, ONE_DIM_DIFF)
-				)
-			)
-		)
+    x_dim_diff = (1/(h**2) * ssp.kron(ONE_DIM_DIFF, ID))
+    y_dim_diff = (1/(h**2) * ssp.kron(ID, ONE_DIM_DIFF))
 
-		Z_DIM_DIFF 	= ssp.csr_matrix(z_dim_diff.astype(int))
-		z_dim_diff = None
+    X_DIM_DIFF = ssp.csr_matrix(x_dim_diff.astype(int))
+    Y_DIM_DIFF = ssp.csr_matrix(y_dim_diff.astype(int))
+    TWO_LAPLACE = ssp.csr_matrix(x_dim_diff + y_dim_diff)
 
-		THREE_LAPLACE = (ssp.kron(X_DIM_DIFF, ID)
-				+ssp.kron(Y_DIM_DIFF, ID)
-				+Z_DIM_DIFF)
+    one_dim_diff = None
+    x_dim_diff = None
+    y_dim_diff = None
 
-		return THREE_LAPLACE
+    if dimension == "2D":
+        return TWO_LAPLACE
 
-	else:
-		raise ValueError('string: Dimension, either "2D" or "3D"')
+    elif dimension == "3D":
+        z_dim_diff = (1/(h**2)*(
+            ssp.kron(ID,
+                     ssp.kron(ID, ONE_DIM_DIFF)
+                     )
+        )
+        )
+
+        Z_DIM_DIFF = ssp.csr_matrix(z_dim_diff.astype(int))
+        z_dim_diff = None
+
+        THREE_LAPLACE = (ssp.kron(X_DIM_DIFF, ID)
+                         + ssp.kron(Y_DIM_DIFF, ID)
+                         + Z_DIM_DIFF)
+
+        return THREE_LAPLACE
+
+    else:
+        raise ValueError('string: Dimension, either "2D" or "3D"')
 
 
-# %%
 def build_forcing_vector(lin_spaces: list,
-			 internal_fun,
-			 boundary_fun  = None
-			 ) -> np.ndarray:
-	"""Builds the RHS of the linear system for a arbitray-dimensional laplacian
+                         internal_fun,
+                         boundary_fun=None
+                         ) -> np.ndarray:
+    """Builds the RHS of the linear system for a arbitray-dimensional laplacian
 
-	Parameters
-	----------
-	lin_spaces : list
-	    List of arrays of points that will be used to build the meshgrid
-	internal_fun : Callable[list[float]]
-	    Function that takes n-dimensional coordinate arrays and returns the value of the forcing at that coordinate
-	boundary_fun : Callable[list[float]]
-	    Function that takes n-dimensional coordinate arrays and returns the value of the forcing at that boundary coordinate
+    Parameters
+    ----------
+    lin_spaces : list
+        List of arrays of points that will be used to build the meshgrid
+    internal_fun : Callable[list[float]]
+        Function that takes n-dimensional coordinate arrays and returns the value of the forcing at that coordinate
+    boundary_fun : Callable[list[float]]
+        Function that takes n-dimensional coordinate arrays and returns the value of the forcing at that boundary coordinate
 
-	Returns
-	-------
-	np.ndarray
-	    The forcing vector
-	"""
-	grids = np.meshgrid(*lin_spaces)
-	internal_forcing_array = internal_fun(*grids)
-	if boundary_fun == None:
-		def boundary_fun(*grids):
-			return 0*grids[0]
+    Returns
+    -------
+    np.ndarray
+        The forcing vector
+    """
 
-	boundary_forcing_array = boundary_fun(*grids)
+    grids = np.meshgrid(*lin_spaces)
+    internal_forcing_array = internal_fun(*grids)
+    if boundary_fun == None:
+        def boundary_fun(*grids):
+            return 0*grids[0]
 
-	dims = len(lin_spaces)
-	mask = tuple([slice(1,-1)]*dims)
-	forcing, forcing[mask] = boundary_forcing_array, internal_forcing_array[mask]
-	print(mask)
+    boundary_forcing_array = boundary_fun(*grids)
 
-	forcing_vector = forcing.flatten()
-	return forcing_vector
+    dims = len(lin_spaces)
+    mask = tuple([slice(1, -1)]*dims);
+    forcing, forcing[mask] = boundary_forcing_array, internal_forcing_array[mask]
+    print(mask)
 
-
-# %%
-%%time
-
-def int_forc_fun(x,y):
-	return (x**2 + y**2)*np.sin(x*y)
-
-def bound_forc_fun(x,y):
-	return np.sin(x*y)
-
-x = np.linspace(0,1,N+1)
-y = np.linspace(0,1,N+1)
-
-X, Y = np.meshgrid(x,y)
-
-# %%
-vecF = build_forcing_vector([x,y], int_forc_fun, bound_forc_fun)
-
-# %%
-%%time
-TWO_LAPLACE = get_elem_mat(N+1, "2D")
-
-# %%
-%%time
-#Manipulating the 2D-laplacian and the forcing vector to obey boundary elements
-#By selecting the boundary points
-Xval, Yval = X.ravel(), Y.ravel()
-
-boundary_list = np.squeeze(
-	np.where(
-		(Xval==x[0]) | (Xval==x[-1]) | (Yval==y[0]) | (Yval==y[-1])
-	)
-);
-
-SPARSE_ID = ssp.eye((N+1)**2).tocsr()
-for row in boundary_list:
-	TWO_LAPLACE[row,:] = SPARSE_ID[row,:]
-SPARSE_ID = None
+    forcing_vector = forcing.flatten()
+    FORCING_VECTOR = ssp.csc_matrix(forcing_vector).T
+    return FORCING_VECTOR
 
 
+def force_boundary_matrix(lin_spaces: list,
+                          SYSTEM_MATRIX: ssp.csc_matrix,
+                          P_MATRIX: ssp.csc_matrix) -> ssp.csc_matrix:
+    """Forces the boundary points to remain unchanged after solving the system using the SYSTEM_MATRIX and subtracting the element vector with P_MATRIX.dot(vec_boundary)
 
-# %%
-size = (N+1)**2
+    Parameters
+    ----------
+    lin_spaces : list
+        numpy linspaces describing the grid_points of the problem
+    SYSTEM_MATRIX : ssp.csc_matrix
+        sparse matrix describing the element matrix of the system
+    P_MATRIX : ssp.csc_matrix
+        pre-initialised matrix of size same as SYSTEM_MATRIX which will contain the equations for altering the element vector
+    """
 
-TWO_LAPLACE = TWO_LAPLACE.tocsc()
-P_MATRIX = ssp.csc_matrix((size,size))
+    grids = np.meshgrid(*lin_spaces)
 
+    boundary_list = np.asarray([])
+    for grid in range(len(grids)):
+        grid_vals = grids[grid].ravel()
+        idx_list = np.squeeze(
+            np.where(
+                (grid_vals == lin_spaces[grid][0]) | (grid_vals == lin_spaces[grid][-1])
+            )
+        );
+        boundary_list = np.append(boundary_list, idx_list)
+        boundary_list = np.unique(boundary_list)
 
-TWO_LAPLACE.shape
+    shape = len(lin_spaces[0])**len(lin_spaces)
 
+    SPARSE_ID = ssp.eye(shape).tocsr()
+    P_MATRIX = ssp.csc_matrix((shape, shape))
+    ONES = ssp.lil_matrix((shape, shape))
+    ZEROES = ssp.csc_matrix((shape, shape))
 
-# %%
-ONES = ssp.csr_matrix((size,size))
-ONES[boundary_list,boundary_list] = 1
+    ONES[boundary_list, boundary_list] = 1
+    ONES = ONES.tocsc()
+    SYSTEM_MATRIX = SYSTEM_MATRIX.tocsr()
 
+    for row in boundary_list:
+        SYSTEM_MATRIX[row, :] = SPARSE_ID[row, :]
 
-# %%
-%%time
+    SYSTEM_MATRIX.tocsc()
 
-ZEROES = ssp.csc_matrix((size,size))
+    for column in boundary_list:
+        P_MATRIX[:, column] = SYSTEM_MATRIX[:, column]
+        SYSTEM_MATRIX[:, column] = ZEROES[:, column]
 
-for column in boundary_list:
-	P_MATRIX[:, column] = TWO_LAPLACE[:, column]
-	TWO_LAPLACE[:,column] = ZEROES[:,column]
+    SYSTEM_MATRIX = (SYSTEM_MATRIX + ONES)
+    P_MATRIX = (P_MATRIX - ONES)
 
-print(type(TWO_LAPLACE))
+    SPARSE_ID = None
+    ONES = None
+    ZEROES = None
 
-TWO_LAPLACE = (TWO_LAPLACE + ONES)
-P_MATRIX = (P_MATRIX - ONES)
-
-print(type(TWO_LAPLACE))
-
-# %%
-plt.imshow(TWO_LAPLACE.toarray())
-plt.colorbar()
-
-# %%
-pm = P_MATRIX
-
-# %%
-P_MATRIX.shape
-plt.imshow(TWO_LAPLACE.toarray())
-plt.colorbar()
-
-# %%
-#Building u0
-U0 = np.sin(X*Y)
-u0 = U0.flatten()
-to_subtract = P_MATRIX.dot(u0)
-
-
-# %%
-vecF = np.subtract(vecF, to_subtract)
-
-# %%
-TWO_LAPLACE.shape
-
-# %%
+    return SYSTEM_MATRIX, P_MATRIX
 
 
-# %%
-%%time
-u = spsolve(TWO_LAPLACE, vecF.T)
+def force_boundary_vector(grids: list,
+    bound_force,
+    ELEMENT_VECTOR: ssp.csc_matrix,
+    P_MATRIX) -> ssp.csc_matrix:
 
-# %%
-array_u = u.reshape((N+1,N+1))
-plt.imshow(array_u, origin='lower');
-plt.colorbar()
+    m_grids = np.meshgrid(*grids)
+    VALUES = bound_force(*m_grids)
+    VALUES_VEC = ssp.csc_matrix(VALUES.flatten()).T
 
-# %%
-u_ex = np.sin(X*Y)
-vec_u_ex = u_ex.flatten()
+    ELEMENT_VECTOR = ELEMENT_VECTOR - P_MATRIX.dot(VALUES_VEC)
 
-# %%
-error = np.sqrt(h**2 *np.sum((vec_u_ex-u)**2))
-print("h**2: {:.5f}\t error: {:.5f}".format(h**2, error))
-print('relative error: {:.4f}\t [h**2]'.format(error/(h**2)))
+    return ELEMENT_VECTOR
 
-# %%
+
+
 def decomp_lu(M: ssp.csc_matrix) -> ssp.csc_matrix:
-	"""Creates the sparse lower matrix of the LU decomposition of M
+    """Creates the sparse lower matrix of the LU decomposition of M
 
-	Parameters
-	----------
-	M : ssp.csc_matrix
-	    The matrix to LU decompose such that L@U = M
+    Parameters
+    ----------
+    M : ssp.csc_matrix
+        The matrix to LU decompose such that L@U = M
 
-	Returns
-	-------
-	ssp.csc_matrix
-	    The sparse lower matrix L
-	"""
-	#In this code block all fully uppercase variables are sparse matrices
-	shape_m = M.shape
-	ID = ssp.eye(shape_m[0])
-	ZEROES = ssp.csc_matrix(shape_m)
+    Returns
+    -------
+    ssp.csc_matrix
+        The sparse lower matrix L
+    """
+    # In this code block all fully uppercase variables are sparse matrices
+    shape_m = M.shape
+    ID = ssp.eye(shape_m[0])
+    ZEROES = ssp.csc_matrix(shape_m)
 
-	SUM = ID.copy()
-	for k in range(0, shape_m[1]):
-		Akk = M[k,k]
-		VEC = M[:,k] / Akk
-		VEC[0: k+1] = ZEROES[0:k+1, 0]
+    SUM = ID.copy()
+    for k in range(0, shape_m[1]):
+        Akk = M[k, k]
+        VEC = M[:, k] / Akk
+        VEC[0: k+1] = ZEROES[0:k+1, 0]
 
-		EK = ZEROES[:,0].copy()
-		EK[k] = 1
+        EK = ZEROES[:, 0].copy()
+        EK[k] = 1
 
-		ADD = VEC * EK.T
-		SUM += ADD
+        ADD = VEC * EK.T
+        SUM += ADD
 
-	L = SUM
-	U = spsolve(SUM, M)
+    L = SUM
+    U = spsolve(SUM, M)
 
-	return L, U
-
-# %%
-from tqdm import tqdm
-
-# %%
-##Mocht je hier een error krijgen dan moet je waarschijnlijk even het volgende veranderen
-## tqdm(range(...)) -> range(...)
+    return L, U
 
 
 def decomp_cholesky(M: ssp.csc_matrix) -> ssp.csc_matrix:
-	"""Creates the sparse lower triangular matrix C that results from cholesky
-	decomposition.
+    """Creates the sparse lower triangular matrix C that results from cholesky
+    decomposition.
 
-	Parameters
-	----------
-	M : ssp.csc_matrix
-	    The matrix M such that cholesky decomposition yields C, scuh that
-	    C@C.T == M
+    Parameters
+    ----------
+    M : ssp.csc_matrix
+        The matrix M such that cholesky decomposition yields C, scuh that
+        C@C.T == M
 
-	Returns
-	-------
-	ssp.csc_matrix
-	    The sparse lower triangular matrix C
-	"""
-	shape_m = M.shape
-	ZEROES = ssp.lil_matrix(shape_m)
-	C = ssp.lil_matrix(shape_m)
-	TMP = M.copy().tolil()
+    Returns
+    -------
+    ssp.csc_matrix
+        The sparse lower triangular matrix C
+    """
+    shape_m = M.shape
+    ZEROES = ssp.lil_matrix(shape_m)
+    C = ssp.lil_matrix(shape_m)
+    TMP = M.copy().tolil()
 
-	for col in tqdm(range(0, shape_m[1])): #Hierzo
-		C[col,col] = np.sqrt((TMP[col,col] - ( C[col,0:col].power(2) ).sum()))
-		TMP[col,col] = C[col,col]
+    for col in range(0, shape_m[1]):
+        C[col, col] = np.sqrt((TMP[col, col] - (C[col, 0:col].power(2)).sum()))
+        TMP[col, col] = C[col, col]
 
-		PROD = TMP[col+1:,0:col]*TMP[col,0:col].T
+        PROD = TMP[col+1:, 0:col]*TMP[col, 0:col].T
 
-		SUM = PROD.sum(axis=1)
+        SUM = PROD.sum(axis=1)
 
-		pref = 1/(C[col,col])
+        pref = 1/(C[col, col])
 
-		C[col+1:,col] = pref*(TMP[col+1:,col] - SUM)
-		TMP[col+1:,col] = C[col+1:, col]
+        C[col+1:, col] = pref*(TMP[col+1:, col] - SUM)
+        TMP[col+1:, col] = C[col+1:, col]
 
-		C[col,col+1:] = ZEROES[col,col+1:]
+        C[col, col+1:] = ZEROES[col, col+1:]
 
-	return C
+    return C
 
 
-# %%
-TWO_LAPLACE.tocsc()
+def sol_chol_dec(SYSTEM_MATRIX: ssp.csc_matrix,
+                 FORCING_VECTR: ssp.csc_matrix) -> Tuple[ssp.csc_matrix, dict, int]:
+    """Solves the system by decomposing the SYSTEM_MATRIX to its cholesky components and then solves using forward and backwards subsitution.
 
-# %%
+    Parameters
+    ----------
+    SYSTEM_MATRIX : ssp.csc_matrix
+        The element matrix
+    FORCING_VECTR : ssp.csc_matrix
+        The element vector
 
-L, U = decomp_lu(TWO_LAPLACE)
-D = ssp.diags(U.diagonal(k=0))
+    Returns
+    -------
+    ssp.csc_matrix
+        Solution vector of size FORCING_VECTR
+    """
 
-plt.imshow(D.toarray())
-plt.colorbar()
+    start_time = time_ns()
 
-sqrtD = D.sqrt()
+    sys_mat_fact = cholesky(SYSTEM_MATRIX,
+                            beta=0,
+                            ordering_method='natural')
+    LOWER = sys_mat_fact.L()
+    UPPER = LOWER.T
 
-C = L@sqrtD
+    SYSTEM_MATRIX = None
 
-# %%
-Utest = D@L.T
+    fact_time = time_ns() - start_time
+    start_time = time_ns()
 
-# %%
-np.alltrue(Utest.toarray() == U.toarray())
+    TMP = spsolve(LOWER, FORCING_VECTR)
 
-# %%
-LU = L@U
+    forw_time = time_ns() - start_time
 
-np.alltrue(TWO_LAPLACE.toarray() == LU.toarray())
+    SOL = spsolve(UPPER, TMP)
 
-# %%
-np.all(np.linalg.eigvals(TWO_LAPLACE.toarray())>0)
+    back_time = time_ns() - start_time - forw_time
 
-# %%
-%%time
-##Mocht je een error krijgen, lees dan de comment in de cell hierboven
-#C = decomp_cholesky(TWO_LAPLACE)
+    time_dict = {"decomposition": fact_time/1e6,
+                 "forward": forw_time/1e6,
+                 "backward": back_time/1e6}
 
-# %%
-%%time
+    fill_in = LOWER.count_nonzero()
 
-#C_factor = cholesky(TWO_LAPLACE, beta=0, ordering_method='natural')
-
-
-# %%
-#C2 = C_factor.L()
-
-# %%
-#np.alltrue(C.toarray() == C2.toarray())
-
-# %% [markdown]
-# plt.close()
-# plt.imshow(C2.toarray())
-# plt.colorbar()
-
-# %%
-plt.imshow(C.toarray())
-plt.colorbar()
-
-# %%
-plt.imshow(TWO_LAPLACE.toarray())
-plt.colorbar()
-
-# %%
-PLZ_WORK = C@C.T
-plt.imshow(PLZ_WORK.toarray())
-plt.colorbar()
-
-# %%
-np.isclose(TWO_LAPLACE.toarray(), PLZ_WORK.toarray())
-
-# %% [markdown]
-# MAYBE = C2@C2.T
-# plt.imshow(MAYBE.toarray())
-# plt.colorbar()
-
-# %% [markdown]
-# U_MAYBE = spsolve(MAYBE, vecF)
-#
-# u_maybe = (U_MAYBE).reshape((N+1,N+1))
-# plt.imshow(u_maybe, origin='lower')
-# plt.colorbar()
-
-# %%
-plt.imshow(TWO_LAPLACE.toarray())
-plt.colorbar()
-
-# %%
-from time import time_ns
-
-# %%
-def sys_solve_chol(f: ssp.csc_matrix, L: ssp.csc_matrix, U: ssp.csc_matrix) -> ssp.csc_matrix:
-	LOWER = L #Forward matrix
-	UPPER = U #Backward
-
-	startt = time_ns()
-	b = spsolve(LOWER, f)
-	forwt = time_ns() - startt
-	sol = spsolve(UPPER, b)
-	backt = time_ns() - startt - forwt
-
-	statement = "Forward step took: {:.2f} ms, Backward step took: {:.2f} ms".format(forwt/1e6, backt/1e6)
-
-	return sol, statement
-
-
-# %%
-%%time
-
-u, state = sys_solve_chol(vecF, L, U)
-
-print(state)
-
-# %%
-array_u = u.reshape((N+1,N+1))
-
-plt.imshow(array_u, origin='lower')
-plt.colorbar()
-
-# %%
-#nonzero counting
-
-nnzA = TWO_LAPLACE.count_nonzero()
-nnzC = C.count_nonzero()
-
-fill_ratio = nnzC / nnzA
-
-print(fill_ratio)
-
-# %%
-E = -1*ssp.tril(TWO_LAPLACE, k=-1)
-F = -1*ssp.triu(TWO_LAPLACE, k=1)
-D = ssp.diags(TWO_LAPLACE.diagonal())
-
-# %%
-plt.imshow(E.toarray())
-plt.colorbar()
-
-# %%
-plt.imshow(F.toarray())
-plt.colorbar()
-
-# %%
-plt.imshow(D.toarray())
-plt.colorbar()
-
-# %%
-omega = 1.5
-
-MINV = omega*(2-omega) * inv(D - omega* E) @ D @ inv(D - omega*F)
-
-shape = MINV.shape
-ID = ssp.csc_matrix(shape)
-
-# %%
-u0 = ssp.csc_matrix(np.zeros(shape[0]))
-r0 = ssp.csc_matrix(np.ones(shape[0]))
-f = ssp.csc_matrix(vecF)
-
-print(vec_u_ex.shape)
-print(u0.shape)
-
-epsilon = 1e-10
-
-
-# %%
-def get_norm(vector: ssp.csc_matrix) -> float:
-	norm = np.sqrt((vector.power(2)).sum())
-	return norm
-
-# %%
-"""norm_f = get_norm(f)
-norm_r = get_norm(r0)
-
-u = u0.T
-r = f.T
-
-
-i = 0
-for i in range(40000):
-	u = u + MINV@r
-	r = COMP@r
-
-	norm_r = get_norm(r)
-
-	if norm_r / norm_f < epsilon:
-		break
-
-print(norm_r/norm_f)
-print(i)
-"""
-
-COMP = (ID - TWO_LAPLACE@MINV)
-
-norm_f = get_norm(f)
-norm_r = get_norm(r0)
-
-u = u0.T
-r = f.T
-
-r_norms = np.asarray([norm_r])
-
-while not norm_r/norm_f < epsilon:
-	u = u + MINV@r
-	r = COMP@r
-
-	norm_r = get_norm(r)
-	r_norms = np.append(r_norms, norm_r)
-
-# %%
-
-len(r_norms)
-
-# %%
-plt.plot(np.arange(len(r_norms)), r_norms)
-plt.semilogy()
-plt.ylabel(r"$\frac{|r_m|_2}{|f^h|_2}$")
-plt.xlabel(r"iteration $m$")
-plt.show()
-
-# %%
-"""
-norm_f = get_norm(f)
-norm_r = get_norm(r0)
-
-u = u0.T
-r = f.T
-
-COMP = (ID - TWO_LAPLACE@MINV)
-
-i = 0
-A = TWO_LAPLACE
-for iter in range(2000):
-	uold = u
-	for i in range(shape[0]):
-		sub1 = A[i,:i]@u[:i]
-		print(sub1.shape)
-		sub2 = A[i,i+1:]@u[i+1:]/A[i,i]
-		print(sub2.shape)
-		u[i] = f[i] - sub1[0,0] - sub2[0,0]
-	u = (1-omega)*uold + omega*u
-
-	if norm_r / norm_f < epsilon:
-		break
-"""
-
-# %%
-plt.imshow(vec_u_ex.reshape((N+1,N+1)))
-plt.colorbar()
-
-# %%
-plt.imshow((u.toarray()).reshape((N+1,N+1)))
-plt.colorbar()
-
-# %%
-#Preconditioned Conjugate-Gradient
-u = u0.T
-r = f.T
-
-norm_f = get_norm(f)
-norm_r = get_norm(r0)
-
-r_prev = 0
-z_prev = 0
-p = 0
-
-i = 0
-while not norm_r/norm_f < epsilon:
-	r_pprev = r_prev
-	r_prev = r
-	z_pprev = z_prev
-	p_prev = p
-
-	z_prev = MINV@r_prev
-
-	if i == 0:
-		p = z_prev
-	else:
-		beta = (r_prev.T @ z_prev)/(r_pprev.T @ z_pprev)
-		p = z_prev + beta[0,0]*p_prev
-
-	alpha = (r_prev.T @ z_prev)/(p.T @ TWO_LAPLACE @ p)
-	u += alpha[0,0]*p
-	r += -alpha[0,0]*(TWO_LAPLACE@p)
-	i += 1
-	norm_r = get_norm(r)
-
-print(i)
-
-# %%
-plt.imshow((u.toarray()).reshape((N+1,N+1)))
-plt.colorbar()
-
-# %%
-
-
-
+    return SOL, time_dict, fill_in
