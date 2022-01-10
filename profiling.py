@@ -1,7 +1,10 @@
 from cProfile import run
+import matplotlib.pyplot as plt
 import numpy as np
+from scipy.sparse import load_npz
 
-from wi4201_lib import build_forcing_vector, force_boundary_matrix, force_boundary_vector, get_elem_mat
+
+from wi4201_lib import build_forcing_vector, force_boundary_matrix, force_boundary_vector, get_elem_mat, sol_chol_dec
 
 if __name__ == "__main__":
     # Global variables
@@ -14,7 +17,7 @@ if __name__ == "__main__":
     def bound_force(x, y, z):
         return np.sin(x*y*z)
 
-    P = 6
+    P = 4
     N = 2**P
     h = 1/N
     x = np.linspace(0,1,N+1)
@@ -23,10 +26,13 @@ if __name__ == "__main__":
 
     grids = [x, y, z]
 
-    ELEMENT_MATRIX = get_elem_mat(N+1, h, "3D")
+    ELEMENT_MATRIX = load_npz('data/elemmat{}-3D.npz'.format(N))
+    ELEMENT_VECTOR = load_npz('data/elemvec{}-3D.npz'.format(N))
 
+    run('SOL, time_dict, factor_fill = sol_chol_dec(ELEMENT_MATRIX, ELEMENT_VECTOR)')
 
-    P_MATRIX = ELEMENT_MATRIX
+    print(time_dict)
 
-
-    run("force_boundary_matrix(grids,ELEMENT_MATRIX,P_MATRIX)")
+    plt.imshow(SOL.reshape((N+1,N+1)))
+    plt.colorbar()
+    plt.show()

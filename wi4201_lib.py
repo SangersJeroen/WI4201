@@ -270,21 +270,20 @@ def sol_chol_dec(SYSTEM_MATRIX: ssp.csc_matrix,
     start_time = time_ns()
 
     sys_mat_fact = cholesky(SYSTEM_MATRIX,
+                            mode="auto",
                             beta=0,
                             ordering_method='natural')
-    LOWER = sys_mat_fact.L()
-    UPPER = LOWER.T
-
-    SYSTEM_MATRIX = None
 
     fact_time = time_ns() - start_time
+    print('factored!')
+    SYSTEM_MATRIX = None
     start_time = time_ns()
 
-    TMP = spsolve(LOWER, FORCING_VECTR)
+    TMP = sys_mat_fact.solve_L(FORCING_VECTR, use_LDLt_decomposition=False)
 
     forw_time = time_ns() - start_time
 
-    SOL = spsolve(UPPER, TMP)
+    SOL = sys_mat_fact.solve_Lt(TMP, use_LDLt_decomposition=False)
 
     back_time = time_ns() - start_time - forw_time
 
@@ -292,6 +291,31 @@ def sol_chol_dec(SYSTEM_MATRIX: ssp.csc_matrix,
                  "forward": forw_time/1e6,
                  "backward": back_time/1e6}
 
-    fill_in = LOWER.count_nonzero()
+    fill_in = sys_mat_fact.L().count_nonzero()
 
     return SOL, time_dict, fill_in
+
+
+def triang_components(
+    SYSTEM_MATRIX: ssp.csc_matrix
+    ) -> Tuple[ssp.csc_matrix, ssp.csc_matrix, ssp.csc_matrix]:
+    """Function returns the lower- and upper-triangular as well as the diagonal of the supplied matrix.
+
+    Parameters
+    ----------
+    SYSTEM_MATRIX : ssp.csc_matrix
+        [description]
+
+    Returns
+    -------
+    Tuple[ssp.csc_matrix, ssp.csc_matrix, ssp.csc_matrix]
+        [description]
+    """
+
+    E = -1*ssp.tril(SYSTEM_MATRIX, k=-1)
+    F = -1*ssp.tril(SYSTEM_MATRIX, k=1)
+    D = ssp.diags(SYSTEM_MATRIX.diagonal())
+
+    return E, F, D
+
+
