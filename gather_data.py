@@ -7,11 +7,11 @@ from scipy.sparse.linalg import spsolve
 
 from wi4201_lib import build_forcing_vector, force_boundary_matrix, force_boundary_vector, get_elem_mat, sol_chol_dec
 
-f = open('data/rlog.txt', 'a')
 
 if __name__ == "__main__":
+    f = open('data/rlog.txt', 'a')
     # Global variables
-    powers_2D = [2, 4, 6, 8]
+    powers_2D = [2, 4, 6, 8, 10]
     powers_3D = [2, 4, 6, 8]
 
     def int_force(x, y):
@@ -36,9 +36,9 @@ if __name__ == "__main__":
 
         grids = [x, y]
         print('--- 1 ---')
-        print("Starting 3D: 2**{}".format(P))
+        print("Starting 2D: 2**{}".format(P))
         f.write("--- 1 ---\n")
-        f.write("Starting 3D: 2**{}\n".format(P))
+        f.write("Starting 2D: 2**{}\n".format(P))
 
         if os.path.isfile('data/elemmat{}-2D.npz'.format(N)) and os.path.isfile('data/elemvec{}-2D.npz'.format(N)):
             ELEMENT_MATRIX = load_npz('data/elemmat{}-2D.npz'.format(N))
@@ -115,10 +115,12 @@ if __name__ == "__main__":
         permut = rcv(ELEMENT_MATRIX, symmetric_mode=True)
         RED_BAND = ELEMENT_MATRIX[permut[:,np.newaxis], permut[np.newaxis,:]]
 
+        ELEMENT_MATRIX = None
+
         SOL, time_dict, factor_fill = sol_chol_dec(RED_BAND, ELEMENT_VECTOR)
         print(time_dict)
         f.write(str(time_dict)+"\n")
-        fill_in = factor_fill / ELEMENT_MATRIX.count_nonzero()
+        fill_in = factor_fill / RED_BAND.count_nonzero()
         print("Fill-in: {:.2f}".format(fill_in))
         f.write("Fill-in: {:.2f}\n".format(fill_in))
         print('\n\n')
@@ -158,8 +160,8 @@ if __name__ == "__main__":
         else:
 
             print("Building Element matrix of size {}".format(N))
-            f.write()
-            start = time_ns("Building Element matrix of size {}\n".format(N))
+            f.write("Building Element matrix of size {}\n".format(N))
+            start = time_ns()
 
             ELEMENT_MATRIX = get_elem_mat(N+1, h, "3D")
             ELEMENT_VECTOR = build_forcing_vector(grids,
@@ -191,7 +193,7 @@ if __name__ == "__main__":
         #Exercise 2
         print('--- 2 ---')
         f.write('--- 2 ---\n')
-        if P < 6:
+        if P < 8:
             start = time_ns()
             SOL = spsolve(ELEMENT_MATRIX, ELEMENT_VECTOR)
             taken = time_ns() - start
@@ -210,7 +212,7 @@ if __name__ == "__main__":
         f.write('--- 3 ---\n')
         SOL, time_dict, factor_fill = sol_chol_dec(ELEMENT_MATRIX, ELEMENT_VECTOR)
         print(time_dict)
-        f.write(str(time_dict)+"\m")
+        f.write(str(time_dict)+"\n")
 
         #Exercise 4
         print('--- 4 ---')
@@ -226,11 +228,15 @@ if __name__ == "__main__":
         permut = rcv(ELEMENT_MATRIX, symmetric_mode=True)
         RED_BAND = ELEMENT_MATRIX[permut[:,np.newaxis], permut[np.newaxis,:]]
 
+        ELEMENT_MATRIX = None
+
         SOL, time_dict, factor_fill = sol_chol_dec(RED_BAND, ELEMENT_VECTOR)
         print(time_dict)
         f.write(str(time_dict)+"\n")
-        fill_in = factor_fill / ELEMENT_MATRIX.count_nonzero()
+        fill_in = factor_fill / RED_BAND.count_nonzero()
         print("Fill-in: {:.2f}".format(fill_in))
         f.write("Fill-in: {:.2f}\n".format(fill_in))
         print('\n\n')
         f.write("\n\n")
+    f.write("END OF RUN")
+    f.close()

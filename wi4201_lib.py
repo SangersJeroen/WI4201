@@ -147,9 +147,21 @@ def force_boundary_matrix(lin_spaces: list,
 
     SYSTEM_MATRIX.tocsc()
 
-    for column in boundary_list:
-        P_MATRIX[:, column] = SYSTEM_MATRIX[:, column]
-        SYSTEM_MATRIX[:, column] = ZEROES[:, column]
+    bd_idx = boundary_list.astype('int')
+
+    bd_idx_len = len(bd_idx)
+    split_length = 1500
+
+    cut_offs = [i for i in range(0, bd_idx_len, split_length)]
+    cut_offs.append(bd_idx_len)
+
+    for j in range(0, len(cut_offs)-1):
+        start = cut_offs[j]
+        stop = cut_offs[j+1]
+        batch = bd_idx[start:stop]
+
+        P_MATRIX[:, batch] = SYSTEM_MATRIX[:, batch]
+        SYSTEM_MATRIX[:, batch] = ZEROES[:, batch]
 
     SYSTEM_MATRIX = (SYSTEM_MATRIX + ONES)
     P_MATRIX = (P_MATRIX - ONES)
