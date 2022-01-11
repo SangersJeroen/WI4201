@@ -1,0 +1,299 @@
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**4
+--- 2 ---
+Direct solver took 181.244984 ms
+h**2: 0.00391	 error: 0.0071688
+--- 3 ---
+{'decomposition': 127.801313, 'forward': 1.335727, 'backward': 0.981942}
+--- 4 ---
+Fill-in: 30.10
+--- 5 ---
+{'decomposition': 25.989998, 'forward': 1.106763, 'backward': 0.692505}
+Fill-in: 18.25
+
+
+END OF RUN-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**4
+--- 2 ---
+Direct solver took 103.288342 ms
+h**2: 0.00391	 error: 0.0071688
+--- 3 ---
+{'decomposition': 129.361791, 'forward': 1.170484, 'backward': 0.929024}
+--- 4 ---
+Fill-in: 30.10
+--- 5 ---
+{'decomposition': 24.743099, 'forward': 0.894578, 'backward': 0.627818}
+Fill-in: 18.25
+
+
+END OF RUN-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**4
+Building Element matrix of size 16
+Forcing boundaries took: 640.050868 ms
+--- 2 ---
+Direct solver took 290.130567 ms
+h**2: 0.00391	 error: 0.0071688
+--- 3 ---
+{'decomposition': 140.151761, 'forward': 1.254827, 'backward': 1.02368}
+--- 4 ---
+Fill-in: 30.10
+--- 5 ---
+{'decomposition': 34.60981, 'forward': 0.933726, 'backward': 0.675639}
+Fill-in: 18.25
+
+
+--- 1 ---
+Starting 3D: 2**6
+Building Element matrix of size 64
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**8
+Building Element matrix of size 256
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**8
+Building Element matrix of size 256
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**8
+Building Element matrix of size 256
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**8
+Building Element matrix of size 256
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**8
+Building Element matrix of size 256
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**8
+Building Element matrix of size 256
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**8
+Building Element matrix of size 256
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**8
+Building Element matrix of size 256
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**4
+--- 2 ---
+Direct solver took 116.308383 ms
+h**2: 0.00391	 error: 0.0071688
+--- 3 ---
+{'decomposition': 129.714762, 'forward': 1.231109, 'backward': 0.965116}
+--- 4 ---
+Fill-in: 30.10
+--- 5 ---
+{'decomposition': 24.86965, 'forward': 1.054609, 'backward': 0.679905}
+Fill-in: 18.25
+
+
+END OF RUN-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**4
+Building Element matrix of size 16
+Forcing boundaries took: 12331.619241 ms
+--- 2 ---
+Direct solver took 262.944935 ms
+h**2: 0.00391	 error: 2.5282187
+--- 3 ---
+-------------- 2D ---------------
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**4
+--- 2 ---
+Direct solver took 122.345579 ms
+h**2: 0.00391	 error: 2.5282187
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 33933.393019 ms
+--- 2 ---
+Direct solver took 0.209163 ms
+h**2: 0.06250	 error: 0.9367537
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 30494.081062 ms
+--- 2 ---
+Direct solver took 0.201669 ms
+h**2: 0.06250	 error: 0.8414710
+--- 3 ---
+{'decomposition': 3.547114, 'forward': 0.205968, 'backward': 0.043933}
+--- 4 ---
+Fill-in: 0.92
+--- 5 ---
+{'decomposition': 0.149292, 'forward': 0.105355, 'backward': 0.039956}
+Fill-in: 0.90
+
+
+-------------- 3D ---------------
+END OF RUN-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 1477.762918 ms
+--- 2 ---
+Direct solver took 0.187683 ms
+h**2: 0.06250	 error: 0.8414710
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 6900.254906 ms
+--- 2 ---
+Direct solver took 0.164563 ms
+h**2: 0.06250	 error: 0.8414710
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 25733.977982 ms
+--- 2 ---
+Direct solver took 0.184461 ms
+h**2: 0.06250	 error: 0.8414710
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 35242.044617 ms
+--- 2 ---
+Direct solver took 0.172294 ms
+h**2: 0.06250	 error: 0.8414710
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 6417.023577 ms
+--- 2 ---
+Direct solver took 0.236705 ms
+h**2: 0.06250	 error: 31.2002317
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 36274.671381 ms
+--- 2 ---
+Direct solver took 0.213200 ms
+h**2: 0.06250	 error: 31.2002317
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 7578.450986 ms
+--- 2 ---
+Direct solver took 0.201199 ms
+h**2: 0.06250	 error: 0.8414710
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 12484.353849 ms
+--- 2 ---
+Direct solver took 0.223320 ms
+h**2: 0.06250	 error: 0.8414710
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 38230.187777 ms
+--- 2 ---
+Direct solver took 0.183039 ms
+h**2: 0.06250	 error: 1.0348470
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 43389.875849 ms
+--- 2 ---
+Direct solver took 0.175934 ms
+h**2: 0.06250	 error: 0.5174453
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 20515.507010 ms
+--- 2 ---
+Direct solver took 0.160929 ms
+h**2: 0.06250	 error: 0.5174453
+--- 3 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 1813.425949 ms
+--- 2 ---
+Direct solver took 0.209886 ms
+h**2: 0.06250	 error: 0.0000437
+--- 3 ---
+{'decomposition': 3.705599, 'forward': 0.220552, 'backward': 0.044852}
+--- 4 ---
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 1603.303006 ms
+--- 2 ---
+Direct solver took 0.170450 ms
+h**2: 0.06250	 error: 0.0000437
+--- 3 ---
+{'decomposition': 2.782622, 'forward': 0.164532, 'backward': 0.043766}
+--- 4 ---
+Fill-in: 0.92
+--- 5 ---
+{'decomposition': 0.169281, 'forward': 0.102703, 'backward': 0.03984}
+Fill-in: 0.90
+
+
+-------------- 3D ---------------
+END OF RUN-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+--- 2 ---
+Direct solver took 0.181961 ms
+h**2: 0.06250	 error: 0.0000437
+--- 3 ---
+{'decomposition': 2.869764, 'forward': 0.177379, 'backward': 0.052526}
+--- 4 ---
+Fill-in: 0.92
+--- 5 ---
+{'decomposition': 0.139908, 'forward': 0.097144, 'backward': 0.039339}
+Fill-in: 0.90
+
+
+-------------- 3D ---------------
+END OF RUN

@@ -1,0 +1,6 @@
+Building Element matrix of size 8
+Forcing boundaries took: 10.767715 ms
+Building Element matrix of size 32
+Forcing boundaries took: 49.038783 ms
+Building Element matrix of size 128
+Forcing boundaries took: 395.279997 ms

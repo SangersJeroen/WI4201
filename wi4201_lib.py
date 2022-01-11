@@ -94,7 +94,7 @@ def build_forcing_vector(lin_spaces: list,
     boundary_forcing_array = boundary_fun(*grids)
 
     dims = len(lin_spaces)
-    mask = tuple([slice(1, -1)]*dims);
+    mask = tuple([slice(1, -1)]*dims)
     forcing, forcing[mask] = boundary_forcing_array, internal_forcing_array[mask]
     print(mask)
 
@@ -133,42 +133,21 @@ def force_boundary_matrix(lin_spaces: list,
 
     shape = len(lin_spaces[0])**len(lin_spaces)
 
-    SPARSE_ID = ssp.eye(shape).tocsr()
     P_MATRIX = ssp.csc_matrix((shape, shape))
     ONES = ssp.lil_matrix((shape, shape))
-    ZEROES = ssp.csc_matrix((shape, shape))
 
     ONES[boundary_list, boundary_list] = 1
-    ONES = ONES.tocsc()
+    ONES = ONES.tocsr()
+    NEG_MASK = ssp.eye(shape).tocsr() - ONES
     SYSTEM_MATRIX = SYSTEM_MATRIX.tocsr()
 
-    for row in boundary_list:
-        SYSTEM_MATRIX[row, :] = SPARSE_ID[row, :]
+    SYSTEM_MATRIX = NEG_MASK.dot(SYSTEM_MATRIX)
+    P_MATRIX = SYSTEM_MATRIX.copy()
+    P_MATRIX = P_MATRIX.dot(ONES)
+    SYSTEM_MATRIX = SYSTEM_MATRIX.dot(NEG_MASK)
 
     SYSTEM_MATRIX.tocsc()
-
-    bd_idx = boundary_list.astype('int')
-
-    bd_idx_len = len(bd_idx)
-    split_length = 1500
-
-    cut_offs = [i for i in range(0, bd_idx_len, split_length)]
-    cut_offs.append(bd_idx_len)
-
-    for j in range(0, len(cut_offs)-1):
-        start = cut_offs[j]
-        stop = cut_offs[j+1]
-        batch = bd_idx[start:stop]
-
-        P_MATRIX[:, batch] = SYSTEM_MATRIX[:, batch]
-        SYSTEM_MATRIX[:, batch] = ZEROES[:, batch]
-
     SYSTEM_MATRIX = (SYSTEM_MATRIX + ONES)
-    P_MATRIX = (P_MATRIX - ONES)
-
-    SPARSE_ID = None
-    ONES = None
-    ZEROES = None
 
     return SYSTEM_MATRIX, P_MATRIX
 
@@ -324,10 +303,101 @@ def triang_components(
         [description]
     """
 
-    E = -1*ssp.tril(SYSTEM_MATRIX, k=-1)
-    F = -1*ssp.tril(SYSTEM_MATRIX, k=1)
-    D = ssp.diags(SYSTEM_MATRIX.diagonal())
+    E = -1*ssp.tril(SYSTEM_MATRIX, k=-1).tocsc()
+    F = -1*ssp.triu(SYSTEM_MATRIX, k=1).tocsc()
+    D = ssp.diags(SYSTEM_MATRIX.diagonal()).tocsc()
 
     return E, F, D
 
 
+def get_norm(vector: ssp.csc_matrix) -> float:
+    """Function determines the two-norm of the supplied vector
+
+    Parameters
+    ----------
+    vector : ssp.csc_matrix
+        R x 1 array of float
+
+    Returns
+    -------
+    float
+        two-norm of supplied vector
+    """
+    norm = np.sqrt((vector.power(2)).sum())
+    return norm
+
+
+def ssor_solve(
+    SYSTEM_MATRIX:  ssp.csc_matrix,
+    ITER_MATRIX:    ssp.csc_matrix,
+    FORCING_VECTOR: ssp.csc_matrix,
+    u_start:        ssp.csc_matrix,
+    tolerance:      float
+    ) -> Tuple[ssp.csc_matrix, np.ndarray]:
+
+    norm_f = get_norm(FORCING_VECTOR)
+    norm_r = get_norm(FORCING_VECTOR)
+
+    u = u_start
+    r = FORCING_VECTOR.copy()
+
+    r_norms = np.asarray([norm_r])
+
+    while not norm_r / norm_f < tolerance:
+        u = u + ITER_MATRIX@r
+        r = FORCING_VECTOR - SYSTEM_MATRIX@u
+
+        norm_r = get_norm(r)
+        r_norms = np.append(r_norms, norm_r)
+
+    return u, r_norms
+
+
+def prec_ssor_solve(
+    SYSTEM_MATRIX:  ssp.csc_matrix,
+    ITER_MATRIX:    ssp.csc_matrix,
+    FORCING_VECTOR: ssp.csc_matrix,
+    u_start:        ssp.csc_matrix,
+    r_start:        ssp.csc_matrix,
+    tolerance:      float
+    ) -> Tuple[ssp.csc_matrix, np.ndarray]:
+
+    shape = ITER_MATRIX.shape
+
+    u = ssp.csc_matrix(np.zeros(shape[0])).T
+    r = FORCING_VECTOR
+
+    r_norms = 0
+
+    norm_f = get_norm(FORCING_VECTOR)
+    norm_r = get_norm(r_start)
+
+    r_prev = 0
+    z_prev = 0
+    p = 0
+
+    r_norms = np.asarray([norm_r])
+
+    i = 0
+    while not norm_r/norm_f < tolerance:
+        r_pprev = r_prev
+        r_prev = r
+        z_pprev = z_prev
+        p_prev = p
+
+        z_prev = ITER_MATRIX@r_prev
+
+        if i == 0:
+            p = z_prev
+        else:
+            beta = (r_prev.T @ z_prev)/(r_pprev.T @ z_pprev)
+            p = z_prev + beta[0,0]*p_prev
+
+        alpha = (r_prev.T @ z_prev)/(p.T @ SYSTEM_MATRIX @ p)
+        u += alpha[0,0]*p
+        r += -alpha[0,0]*(SYSTEM_MATRIX@p)
+        i += 1
+        norm_r = get_norm(r)
+        r_norms = np.append(r_norms, norm_r)
+
+    return u, r_norms

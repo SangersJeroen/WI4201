@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from time import time, time_ns
 from scipy.sparse import csgraph, save_npz, load_npz
 from scipy.sparse.csgraph import reverse_cuthill_mckee as rcv
@@ -11,8 +12,8 @@ from wi4201_lib import build_forcing_vector, force_boundary_matrix, force_bounda
 if __name__ == "__main__":
     f = open('data/rlog.txt', 'a')
     # Global variables
-    powers_2D = [2, 4, 6, 8, 10]
-    powers_3D = [2, 4, 6, 8]
+    powers_2D = [2,4,6,8,10]
+    powers_3D = [2,4,6,8]
 
     def int_force(x, y):
         return (x**2 + y**2)*np.sin(x*y)
@@ -66,6 +67,11 @@ if __name__ == "__main__":
             ELEMENT_MATRIX, P_MATRIX = force_boundary_matrix(grids,
                                                             ELEMENT_MATRIX,
                                                             P_MATRIX)
+
+            plt.imshow(ELEMENT_MATRIX.toarray())
+            plt.colorbar()
+            plt.show()
+
             ELEMENT_VECTOR = force_boundary_vector(grids,
                                 bound_force,
                                 ELEMENT_VECTOR,
