@@ -17,7 +17,7 @@ if __name__ == "__main__":
     def bound_force(x, y, z):
         return np.sin(x*y*z)
 
-    P = 4
+    P = 8
     N = 2**P
     h = 1/N
     x = np.linspace(0,1,N+1)
@@ -29,7 +29,11 @@ if __name__ == "__main__":
     ELEMENT_MATRIX = load_npz('data/elemmat{}-3D.npz'.format(N))
     ELEMENT_VECTOR = load_npz('data/elemvec{}-3D.npz'.format(N))
 
-    run('SOL, time_dict, factor_fill = sol_chol_dec(ELEMENT_MATRIX, ELEMENT_VECTOR)')
+    ELEMENT_MATRIX = ELEMENT_MATRIX.astype('int')
+    ELEMENT_VECTOR = ELEMENT_VECTOR.astype('int')
+
+
+    SOL, time_dict, factor_fill = sol_chol_dec(ELEMENT_MATRIX, ELEMENT_VECTOR)
 
     print(time_dict)
 

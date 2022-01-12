@@ -12,8 +12,8 @@ from wi4201_lib import build_forcing_vector, force_boundary_matrix, force_bounda
 if __name__ == "__main__":
     f = open('data/rlog.txt', 'a')
     # Global variables
-    powers_2D = [2,4,6,8,10]
-    powers_3D = [2,4,6,8]
+    powers_2D = [2,3,4,5,6,7,8,9]
+    powers_3D = [2,3,4,5,6,7]
 
     def int_force(x, y):
         return (x**2 + y**2)*np.sin(x*y)
@@ -68,10 +68,6 @@ if __name__ == "__main__":
                                                             ELEMENT_MATRIX,
                                                             P_MATRIX)
 
-            plt.imshow(ELEMENT_MATRIX.toarray())
-            plt.colorbar()
-            plt.show()
-
             ELEMENT_VECTOR = force_boundary_vector(grids,
                                 bound_force,
                                 ELEMENT_VECTOR,
@@ -98,6 +94,10 @@ if __name__ == "__main__":
         error = np.max(np.abs(vec_u_ex - SOL))
         print("h**2: {:.5f}\t error: {:.7f}".format(h**2, error))
         f.write("h**2: {:.5f}\t error: {:.7f}\n".format(h**2, error))
+
+        SOL = None
+        u_ex = None
+        vec_u_ex = None
 
         #Exercise 3
         print('--- 3 ---')
@@ -199,7 +199,7 @@ if __name__ == "__main__":
         #Exercise 2
         print('--- 2 ---')
         f.write('--- 2 ---\n')
-        if P < 8:
+        if P < 7:
             start = time_ns()
             SOL = spsolve(ELEMENT_MATRIX, ELEMENT_VECTOR)
             taken = time_ns() - start
@@ -212,6 +212,10 @@ if __name__ == "__main__":
             error = np.max(np.abs(vec_u_ex - SOL))
             print("h**2: {:.5f}\t error: {:.7f}".format(h**2, error))
             f.write("h**2: {:.5f}\t error: {:.7f}\n".format(h**2, error))
+
+            SOL = None
+            u_ex = None
+            vec_u_ex = None
 
         #Exercise 3
         print('--- 3 ---')

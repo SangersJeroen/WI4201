@@ -1,0 +1,18 @@
+---------------- 2 --------------
+ssor took: 12.65 ms
+prec. ssor took: 9.36 ms
+---------------- 3 --------------
+ssor took: 16.46 ms
+prec. ssor took: 20.64 ms
+---------------- 4 --------------
+ssor took: 53.27 ms
+prec. ssor took: 30.33 ms
+---------------- 5 --------------
+ssor took: 745.52 ms
+prec. ssor took: 87.78 ms
+---------------- 6 --------------
+ssor took: 32239.70 ms
+prec. ssor took: 1304.60 ms
+---------------- 7 --------------
+ssor took: 1895678.77 ms
+prec. ssor took: 36028.74 ms

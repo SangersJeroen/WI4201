@@ -263,10 +263,10 @@ def sol_chol_dec(SYSTEM_MATRIX: ssp.csc_matrix,
     sys_mat_fact = cholesky(SYSTEM_MATRIX,
                             mode="auto",
                             beta=0,
+                            use_long=True,
                             ordering_method='natural')
 
     fact_time = time_ns() - start_time
-    print('factored!')
     SYSTEM_MATRIX = None
     start_time = time_ns()
 
