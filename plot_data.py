@@ -273,3 +273,91 @@ plt.semilogx()
 plt.legend()
 plt.savefig('plots/5-4.pdf')
 plt.close()
+
+ssor_r_norms2 = np.load('data/ssor_r_norms2.npy')
+ssor_r_norms3 = np.load('data/ssor_r_norms3.npy')
+ssor_r_norms4 = np.load('data/ssor_r_norms4.npy')
+ssor_r_norms5 = np.load('data/ssor_r_norms5.npy')
+ssor_r_norms6 = np.load('data/ssor_r_norms6.npy')
+ssor_r_norms7 = np.load('data/ssor_r_norms7.npy')
+
+ssor_r_norms2 = ssor_r_norms2/ssor_r_norms2[-1]
+ssor_r_norms3 = ssor_r_norms3/ssor_r_norms3[-1]
+ssor_r_norms4 = ssor_r_norms4/ssor_r_norms4[-1]
+ssor_r_norms5 = ssor_r_norms5/ssor_r_norms5[-1]
+ssor_r_norms6 = ssor_r_norms6/ssor_r_norms6[-1]
+ssor_r_norms7 = ssor_r_norms7/ssor_r_norms7[-1]
+
+fig = plt.figure()
+ax = plt.plot(np.arange(len(ssor_r_norms2)-1), ssor_r_norms2[:-1], label=r'N=2')
+plt.plot(np.arange(len(ssor_r_norms3)-1), ssor_r_norms3[:-1], label=r'N=3')
+plt.plot(np.arange(len(ssor_r_norms4)-1), ssor_r_norms4[:-1], label=r'N=4')
+plt.plot(np.arange(len(ssor_r_norms5)-1), ssor_r_norms5[:-1], label=r'N=5')
+plt.plot(np.arange(len(ssor_r_norms6)-1), ssor_r_norms6[:-1], label=r'N=6')
+plt.plot(np.arange(len(ssor_r_norms7)-1), ssor_r_norms7[:-1], label=r'N=7')
+plt.semilogy()
+plt.title('residual per N')
+plt.xlabel('Iterations')
+plt.ylabel('residual')
+plt.legend()
+
+ax_new = fig.add_axes([0.4,0.5,0.3,0.3])
+plt.plot(np.arange(len(ssor_r_norms2)-1), ssor_r_norms2[:-1], label=r'N=2')
+plt.plot(np.arange(len(ssor_r_norms3)-1), ssor_r_norms3[:-1], label=r'N=3')
+plt.plot(np.arange(len(ssor_r_norms4)-1), ssor_r_norms4[:-1], label=r'N=4')
+plt.semilogy()
+plt.xlabel('Iterations')
+plt.ylabel('residual')
+plt.savefig('plots/6.pdf')
+plt.close()
+
+#Ex 7ssor_r_norms2 = np.load('data/ssor_r_norms2.npy')
+ssor_r_norms3 = np.load('data/ssor_r_norms3.npy')
+ssor_r_norms4 = np.load('data/ssor_r_norms4.npy')
+ssor_r_norms5 = np.load('data/ssor_r_norms5.npy')
+ssor_r_norms6 = np.load('data/ssor_r_norms6.npy')
+ssor_r_norms7 = np.load('data/ssor_r_norms7.npy')
+tab2 = ssor_r_norms2[-6:-1]/ssor_r_norms2[-7:-2]
+tab3 = ssor_r_norms3[-6:-1]/ssor_r_norms3[-7:-2]
+tab4 = ssor_r_norms4[-6:-1]/ssor_r_norms4[-7:-2]
+tab5 = ssor_r_norms5[-6:-1]/ssor_r_norms5[-7:-2]
+tab6 = ssor_r_norms6[-6:-1]/ssor_r_norms6[-7:-2]
+tab7 = ssor_r_norms7[-6:-1]/ssor_r_norms7[-7:-2]
+
+print("2:\t",tab2)
+print("3:\t",tab3)
+print("4:\t",tab4)
+print("5:\t",tab5)
+print("6:\t",tab6)
+print("7:\t",tab7)
+
+prec_ssor_r_norms2 = np.load('data/prec_ssor_r_norms2.npy')
+prec_ssor_r_norms3 = np.load('data/prec_ssor_r_norms3.npy')
+prec_ssor_r_norms4 = np.load('data/prec_ssor_r_norms4.npy')
+prec_ssor_r_norms5 = np.load('data/prec_ssor_r_norms5.npy')
+prec_ssor_r_norms6 = np.load('data/prec_ssor_r_norms6.npy')
+prec_ssor_r_norms7 = np.load('data/prec_ssor_r_norms7.npy')
+
+prec_ssor_r_norms2 = prec_ssor_r_norms2/prec_ssor_r_norms2[-1]
+prec_ssor_r_norms3 = prec_ssor_r_norms3/prec_ssor_r_norms3[-1]
+prec_ssor_r_norms4 = prec_ssor_r_norms4/prec_ssor_r_norms4[-1]
+prec_ssor_r_norms5 = prec_ssor_r_norms5/prec_ssor_r_norms5[-1]
+prec_ssor_r_norms6 = prec_ssor_r_norms6/prec_ssor_r_norms6[-1]
+prec_ssor_r_norms7 = prec_ssor_r_norms7/prec_ssor_r_norms7[-1]
+
+
+fig = plt.figure()
+ax = plt.plot(np.arange(len(prec_ssor_r_norms2)-1), prec_ssor_r_norms2[:-1], label=r'N=2')
+plt.plot(np.arange(len(prec_ssor_r_norms3)-1), prec_ssor_r_norms3[:-1], label=r'N=3')
+plt.plot(np.arange(len(prec_ssor_r_norms4)-1), prec_ssor_r_norms4[:-1], label=r'N=4')
+plt.plot(np.arange(len(prec_ssor_r_norms5)-1), prec_ssor_r_norms5[:-1], label=r'N=5')
+plt.plot(np.arange(len(prec_ssor_r_norms6)-1), prec_ssor_r_norms6[:-1], label=r'N=6')
+#plt.plot(np.arange(len(prec_ssor_r_norms7)-1), prec_ssor_r_norms7[:-1], label=r'N=7')
+plt.semilogy()
+plt.title('residual per N')
+plt.xlabel('Iterations')
+plt.ylabel('residual')
+plt.legend()
+plt.axhline(1e-10, color='red')
+plt.savefig('plots/9.pdf')
+plt.show()

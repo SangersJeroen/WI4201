@@ -12,7 +12,7 @@ from wi4201_lib import build_forcing_vector, force_boundary_matrix, force_bounda
 
 if __name__ == "__main__":
     f = open('data/SSOR_log.txt', "a")
-    powers = [2, 3, 4, 5, 6, 7, 8]
+    powers = [2, 3, 4, 5, 6, 7 ]
 
     def int_force(x, y):
         return (x**2 + y**2)*np.sin(x*y)
@@ -94,7 +94,8 @@ if __name__ == "__main__":
         tolerance = 1e-10
 
         start = time_ns()
-
+        norm_f = get_norm(ELEMENT_VECTOR)
+        """
         SOL, r_norms = ssor_solve(
             ELEMENT_MATRIX,
             MINV,
@@ -103,7 +104,6 @@ if __name__ == "__main__":
             tolerance
         )
 
-        norm_f = get_norm(ELEMENT_VECTOR)
         r_norms = np.append(r_norms, norm_f)
 
         elapsed = (time_ns() - start)/1e6
@@ -111,7 +111,7 @@ if __name__ == "__main__":
         print('ssor took: {:.2f} ms'.format(elapsed))
 
         np.save('data/ssor_r_norms{}'.format(p), r_norms)
-
+        """
         u0 = ssp.csc_matrix(np.zeros(shape[0])).T
         r0 = ssp.csc_matrix(np.ones(shape[0])).T
 
@@ -119,6 +119,7 @@ if __name__ == "__main__":
         f = f.T
 
         start = time_ns()
+        r_norms = 0
 
         SOL, r_norms = prec_ssor_solve(
             ELEMENT_MATRIX,
@@ -129,7 +130,6 @@ if __name__ == "__main__":
             tolerance
         )
 
-        r_norms = 0
 
         elapsed = (time_ns() - start)/1e6
         print("prec. ssor took: {:.2f} ms".format(elapsed))
