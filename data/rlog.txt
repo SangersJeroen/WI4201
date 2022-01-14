@@ -1,0 +1,208 @@
+-------------- 2D ---------------
+--- 1 ---
+Starting 2D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 2.781910 ms
+--- 2 ---
+Direct solver took 0.325136 ms
+h**2: 0.06250	 error: 0.0000437
+--- 3 ---
+{'decomposition': 2.614613, 'forward': 0.224782, 'backward': 0.133961}
+--- 4 ---
+Fill-in: 0.92
+--- 5 ---
+{'decomposition': 0.152134, 'forward': 0.111223, 'backward': 0.059819}
+Fill-in: 0.90
+
+
+--- 1 ---
+Starting 2D: 2**3
+Building Element matrix of size 8
+Forcing boundaries took: 1.281259 ms
+--- 2 ---
+Direct solver took 0.200421 ms
+h**2: 0.01562	 error: 0.0000131
+--- 3 ---
+{'decomposition': 0.250215, 'forward': 0.166152, 'backward': 0.074228}
+--- 4 ---
+Fill-in: 1.53
+--- 5 ---
+{'decomposition': 0.172268, 'forward': 0.115807, 'backward': 0.060718}
+Fill-in: 1.31
+
+
+--- 1 ---
+Starting 2D: 2**4
+Building Element matrix of size 16
+Forcing boundaries took: 1.386786 ms
+--- 2 ---
+Direct solver took 0.500151 ms
+h**2: 0.00391	 error: 0.0000034
+--- 3 ---
+{'decomposition': 0.316298, 'forward': 0.132293, 'backward': 0.067651}
+--- 4 ---
+Fill-in: 3.06
+--- 5 ---
+{'decomposition': 0.240675, 'forward': 0.132208, 'backward': 0.072318}
+Fill-in: 2.33
+
+
+--- 1 ---
+Starting 2D: 2**5
+Building Element matrix of size 32
+Forcing boundaries took: 2.220510 ms
+--- 2 ---
+Direct solver took 1.859381 ms
+h**2: 0.00098	 error: 0.0000009
+--- 3 ---
+{'decomposition': 0.856236, 'forward': 0.217646, 'backward': 0.11173}
+--- 4 ---
+Fill-in: 6.23
+--- 5 ---
+{'decomposition': 0.597435, 'forward': 0.219842, 'backward': 0.130297}
+Fill-in: 4.45
+
+
+--- 1 ---
+Starting 2D: 2**6
+Building Element matrix of size 64
+Forcing boundaries took: 3.530881 ms
+--- 2 ---
+Direct solver took 9.050068 ms
+h**2: 0.00024	 error: 0.0000002
+--- 3 ---
+{'decomposition': 8.649238, 'forward': 0.584191, 'backward': 0.38172}
+--- 4 ---
+Fill-in: 12.61
+--- 5 ---
+{'decomposition': 5.875274, 'forward': 0.538714, 'backward': 0.467551}
+Fill-in: 8.71
+
+
+--- 1 ---
+Starting 2D: 2**7
+Building Element matrix of size 128
+Forcing boundaries took: 8.841027 ms
+--- 2 ---
+Direct solver took 259.257212 ms
+h**2: 0.00006	 error: 0.0000001
+--- 3 ---
+{'decomposition': 182.426165, 'forward': 3.520188, 'backward': 2.658521}
+--- 4 ---
+Fill-in: 25.41
+--- 5 ---
+{'decomposition': 65.153858, 'forward': 2.464024, 'backward': 1.954503}
+Fill-in: 17.24
+
+
+--- 1 ---
+Starting 2D: 2**8
+Building Element matrix of size 256
+Forcing boundaries took: 70.241799 ms
+--- 2 ---
+Direct solver took 1923.719031 ms
+h**2: 0.00002	 error: 0.0000000
+--- 3 ---
+{'decomposition': 1569.302678, 'forward': 20.735393, 'backward': 18.792996}
+--- 4 ---
+Fill-in: 51.00
+--- 5 ---
+{'decomposition': 887.975439, 'forward': 16.297206, 'backward': 13.83364}
+Fill-in: 34.30
+
+
+--- 1 ---
+Starting 2D: 2**9
+Building Element matrix of size 512
+Forcing boundaries took: 253.732732 ms
+--- 2 ---
+Direct solver took 7787.146169 ms
+h**2: 0.00000	 error: 0.0000000
+--- 3 ---
+{'decomposition': 22302.242172, 'forward': 146.78445, 'backward': 144.507891}
+--- 4 ---
+Fill-in: 102.20
+--- 5 ---
+{'decomposition': 12091.608544, 'forward': 131.082415, 'backward': 115.594178}
+Fill-in: 68.43
+
+
+-------------- 3D ---------------
+--- 1 ---
+Starting 3D: 2**2
+Building Element matrix of size 4
+Forcing boundaries took: 1.384451 ms
+--- 2 ---
+Direct solver took 0.192483 ms
+h**2: 0.06250	 error: 0.0057850
+--- 3 ---
+{'decomposition': 0.256913, 'forward': 0.124734, 'backward': 0.06231}
+--- 4 ---
+Fill-in: 1.32
+--- 5 ---
+{'decomposition': 0.239088, 'forward': 0.11997, 'backward': 0.060879}
+Fill-in: 1.19
+
+
+--- 1 ---
+Starting 3D: 2**3
+Building Element matrix of size 8
+Forcing boundaries took: 1.630958 ms
+--- 2 ---
+Direct solver took 1.057376 ms
+h**2: 0.01562	 error: 0.0067096
+--- 3 ---
+{'decomposition': 1.618198, 'forward': 0.234375, 'backward': 0.139923}
+--- 4 ---
+Fill-in: 6.19
+--- 5 ---
+{'decomposition': 0.540723, 'forward': 0.192803, 'backward': 0.081378}
+Fill-in: 4.25
+
+
+--- 1 ---
+Starting 3D: 2**4
+Building Element matrix of size 16
+Forcing boundaries took: 3.816405 ms
+--- 2 ---
+Direct solver took 1844.805921 ms
+h**2: 0.00391	 error: 0.0071688
+--- 3 ---
+{'decomposition': 142.444764, 'forward': 1.669368, 'backward': 1.240318}
+--- 4 ---
+Fill-in: 30.10
+--- 5 ---
+{'decomposition': 25.276355, 'forward': 1.024421, 'backward': 0.75415}
+Fill-in: 18.25
+
+
+--- 1 ---
+Starting 3D: 2**5
+Building Element matrix of size 32
+Forcing boundaries took: 40.223110 ms
+--- 2 ---
+Direct solver took 35203.181124 ms
+h**2: 0.00098	 error: 0.0072149
+--- 3 ---
+{'decomposition': 8446.457395, 'forward': 26.535671, 'backward': 30.901285}
+--- 4 ---
+Fill-in: 132.93
+--- 5 ---
+{'decomposition': 2937.074542, 'forward': 16.731293, 'backward': 18.489834}
+Fill-in: 76.53
+
+
+--- 1 ---
+Starting 3D: 2**6
+Building Element matrix of size 64
+Forcing boundaries took: 285.678402 ms
+--- 2 ---
+Direct solver took 2436528.440830 ms
+h**2: 0.00024	 error: 0.0072266
+--- 3 ---
+{'decomposition': 1001853.301098, 'forward': 725.276941, 'backward': 1004.673963}
+--- 4 ---
+Fill-in: 558.05
+--- 5 ---
+{'decomposition': 391262.189985, 'forward': 500.168987, 'backward': 605.985535}
+Fill-in: 313.81
