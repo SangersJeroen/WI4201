@@ -1,3 +1,4 @@
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -191,7 +192,6 @@ problem_sizes = np.append(problem_size_2D, problem_size_3D)
 
 plt.plot(problem_size_2D, direct_solver_decomp_2D, color='blue', label=r'2D')
 plt.plot(problem_size_3D, direct_solver_decomp_3D, color='red', label=r'3D')
-plt.title('3')
 plt.ylabel(r'factorisation time [$ms$]')
 plt.xlabel(r'Problem size N')
 plt.semilogy()
@@ -206,7 +206,6 @@ plt.plot(problem_size_2D, direct_solver_forwrd_2D, color='darkblue', label=r'2D 
 plt.plot(problem_size_2D, direct_solver_bckwrd_2D, color='blue', label=r'2D - bw')
 plt.plot(problem_size_3D, direct_solver_forwrd_3D, color='red', label=r'3D - fw')
 plt.plot(problem_size_3D, direct_solver_bckwrd_3D, color='darkred', label=r'3D - bw')
-plt.title('3')
 plt.ylabel(r'solving time [$ms$]')
 plt.xlabel(r'Problem size N')
 plt.semilogy()
@@ -219,7 +218,6 @@ plt.close()
 
 plt.plot(problem_size_2D, fill_in[:8], color='blue', label='2D')
 plt.plot(problem_size_3D, fill_in[8:], color='red', label='3D')
-plt.title('4')
 plt.ylabel(r'fill-in factor $\frac{nnz(C)}{nnz(A)}$ [$-$]')
 plt.xlabel(r'Problem size N')
 plt.semilogx()
@@ -232,7 +230,6 @@ plt.plot(problem_size_2D, direct_solver_decomp_2D, color='deepskyblue', label=r'
 plt.plot(problem_size_3D, direct_solver_decomp_3D, color='indianred', label=r'3D')
 plt.plot(problem_size_2D, direct_solver_decomp_2D_red, color='blue', label=r'2D - red')
 plt.plot(problem_size_3D, direct_solver_decomp_3D_red, color='red', label=r'3D - red')
-plt.title('3')
 plt.ylabel(r'factorisation time [$ms$]')
 plt.xlabel(r'Problem size N')
 plt.semilogy()
@@ -251,7 +248,6 @@ plt.plot(problem_size_2D, direct_solver_forwrd_2D_red, color='darkblue', label=r
 plt.plot(problem_size_2D, direct_solver_bckwrd_2D_red, color='blue', label=r'2D - bw -red')
 plt.plot(problem_size_3D, direct_solver_forwrd_3D_red, color='red', label=r'3D - fw- red')
 plt.plot(problem_size_3D, direct_solver_bckwrd_3D_red, color='darkred', label=r'3D - bw-red')
-plt.title('5 - 3')
 plt.ylabel(r'solving time [$ms$]')
 plt.xlabel(r'Problem size N')
 plt.semilogy()
@@ -289,25 +285,23 @@ ssor_r_norms6 = ssor_r_norms6/ssor_r_norms6[-1]
 ssor_r_norms7 = ssor_r_norms7/ssor_r_norms7[-1]
 
 fig = plt.figure()
-ax = plt.plot(np.arange(len(ssor_r_norms2)-1), ssor_r_norms2[:-1], label=r'N=2')
-plt.plot(np.arange(len(ssor_r_norms3)-1), ssor_r_norms3[:-1], label=r'N=3')
-plt.plot(np.arange(len(ssor_r_norms4)-1), ssor_r_norms4[:-1], label=r'N=4')
-plt.plot(np.arange(len(ssor_r_norms5)-1), ssor_r_norms5[:-1], label=r'N=5')
-plt.plot(np.arange(len(ssor_r_norms6)-1), ssor_r_norms6[:-1], label=r'N=6')
-plt.plot(np.arange(len(ssor_r_norms7)-1), ssor_r_norms7[:-1], label=r'N=7')
+ax = plt.plot(np.arange(len(ssor_r_norms2)-1), ssor_r_norms2[:-1], label=r'$N=2^2$')
+plt.plot(np.arange(len(ssor_r_norms3)-1), ssor_r_norms3[:-1], label=r'$N=2^3$')
+plt.plot(np.arange(len(ssor_r_norms4)-1), ssor_r_norms4[:-1], label=r'$N=2^4$')
+plt.plot(np.arange(len(ssor_r_norms5)-1), ssor_r_norms5[:-1], label=r'$N=2^5$')
+plt.plot(np.arange(len(ssor_r_norms6)-1), ssor_r_norms6[:-1], label=r'$N=2^6$')
+plt.plot(np.arange(len(ssor_r_norms7)-1), ssor_r_norms7[:-1], label=r'$N=2^7$')
 plt.semilogy()
-plt.title('residual per N')
-plt.xlabel('Iterations')
-plt.ylabel('residual')
+plt.xlabel(r'Iteration [$-$]')
+plt.ylabel(r'$\frac{\|r_m\|_2}{\|f\|_2}$')
 plt.legend()
 
 ax_new = fig.add_axes([0.4,0.5,0.3,0.3])
-plt.plot(np.arange(len(ssor_r_norms2)-1), ssor_r_norms2[:-1], label=r'N=2')
-plt.plot(np.arange(len(ssor_r_norms3)-1), ssor_r_norms3[:-1], label=r'N=3')
-plt.plot(np.arange(len(ssor_r_norms4)-1), ssor_r_norms4[:-1], label=r'N=4')
+plt.plot(np.arange(len(ssor_r_norms2)-1), ssor_r_norms2[:-1], label=r'$N=2^2$')
+plt.plot(np.arange(len(ssor_r_norms3)-1), ssor_r_norms3[:-1], label=r'$N=2^3$')
+plt.plot(np.arange(len(ssor_r_norms4)-1), ssor_r_norms4[:-1], label=r'$N=2^4$')
 plt.semilogy()
-plt.xlabel('Iterations')
-plt.ylabel('residual')
+plt.xlabel('Iteration')
 plt.savefig('plots/6.pdf')
 plt.close()
 
@@ -347,17 +341,41 @@ prec_ssor_r_norms7 = prec_ssor_r_norms7/prec_ssor_r_norms7[-1]
 
 
 fig = plt.figure()
-ax = plt.plot(np.arange(len(prec_ssor_r_norms2)-1), prec_ssor_r_norms2[:-1], label=r'N=2')
-plt.plot(np.arange(len(prec_ssor_r_norms3)-1), prec_ssor_r_norms3[:-1], label=r'N=3')
-plt.plot(np.arange(len(prec_ssor_r_norms4)-1), prec_ssor_r_norms4[:-1], label=r'N=4')
-plt.plot(np.arange(len(prec_ssor_r_norms5)-1), prec_ssor_r_norms5[:-1], label=r'N=5')
-plt.plot(np.arange(len(prec_ssor_r_norms6)-1), prec_ssor_r_norms6[:-1], label=r'N=6')
+ax = plt.plot(np.arange(len(prec_ssor_r_norms2)-1), prec_ssor_r_norms2[:-1], label=r'$N=2^2$')
+plt.plot(np.arange(len(prec_ssor_r_norms3)-1), prec_ssor_r_norms3[:-1], label=r'$N=2^3$')
+plt.plot(np.arange(len(prec_ssor_r_norms4)-1), prec_ssor_r_norms4[:-1], label=r'$N=2^4$')
+plt.plot(np.arange(len(prec_ssor_r_norms5)-1), prec_ssor_r_norms5[:-1], label=r'$N=2^5$')
+plt.plot(np.arange(len(prec_ssor_r_norms6)-1), prec_ssor_r_norms6[:-1], label=r'$N=2^6$')
 #plt.plot(np.arange(len(prec_ssor_r_norms7)-1), prec_ssor_r_norms7[:-1], label=r'N=7')
 plt.semilogy()
-plt.title('residual per N')
-plt.xlabel('Iterations')
-plt.ylabel('residual')
+plt.xlabel(r'Iteration [$-$]')
+plt.ylabel(r'$\frac{\|r_m\|_2}{\|f\|_2}$')
 plt.legend()
 plt.axhline(1e-10, color='red')
+plt.text(30,1e-11,r'$\frac{\|r_m\|_2}{\|f\|_2}=10^{-10}$')
 plt.savefig('plots/9.pdf')
+plt.show()
+
+total_cholesky_2D = direct_solver_decomp_2D + direct_solver_bckwrd_2D + direct_solver_forwrd_2D
+total_cholesky_2D_red = direct_solver_bckwrd_2D_red + direct_solver_forwrd_2D_red + direct_solver_decomp_2D_red
+
+print(total_cholesky_2D)
+print(total_cholesky_2D_red)
+
+ssor_time = np.asarray([12.65,16.46,53.27,745.52,32239.70,1895678.77])
+ssor_p = np.asarray([2,3,4,5,6,7])
+N_ssor = 2**ssor_p
+
+def func(x, a):
+	return x**a
+
+from scipy.optimize import curve_fit as cv
+
+opt, cov = cv(func, N_ssor[:-1], ssor_time[:-1])
+
+N = np.linspace(0, 2**7, 1000)
+print(opt[0],cov)
+
+plt.plot(N_ssor,ssor_time)
+plt.plot(N, N**opt[0])
 plt.show()
